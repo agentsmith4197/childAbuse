@@ -1,119 +1,59 @@
 // src/pages/ReportForm.js
 
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { firestore, storage } from '../firebaseConfig';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import Layout from '../components/Layout';
 
 const ReportForm = () => {
-  const [form, setForm] = useState({
-    incidentDate: '',
-    location: '',
-    victimAge: '',
-    description: '',
-  });
-  const [file, setFile] = useState(null);
-  const [error, setError] = useState('');
-  const navigate = useNavigate();
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!form.incidentDate || !form.location || !form.victimAge || !form.description) {
-      setError('All fields are required');
-      return;
-    }
-
-    try {
-      let fileURL = null;
-      if (file) {
-        const fileRef = storage.ref(`reports/${file.name}`);
-        await fileRef.put(file);
-        fileURL = await fileRef.getDownloadURL();
-      }
-
-      await firestore.collection('reports').add({
-        ...form,
-        fileURL,
-      });
-
-      navigate('/');
-    } catch (err) {
-      setError('Error submitting report');
-    }
-  };
-
   return (
     <Layout>
-      <div className="max-w-md mx-auto bg-white p-8 shadow-lg rounded-lg">
-        <h2 className="text-2xl font-bold mb-6">Report an Incident</h2>
-        {error && <p className="text-red-500 mb-4">{error}</p>}
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-gray-700">Incident Date</label>
-            <input
-              type="date"
-              name="incidentDate"
-              value={form.incidentDate}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
-              required
-            />
+      <div className="bg-gray-100 py-10">
+        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10">
+          <h1 className="text-3xl font-bold text-blue-500 mb-6">Report an Incident</h1>
+          <form className="bg-white p-8 rounded-lg shadow-lg">
+            <div className="mb-4">
+              <label htmlFor="name" className="block text-gray-700 text-sm font-bold mb-2">Name:</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                required
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">Email:</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                required
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="incident" className="block text-gray-700 text-sm font-bold mb-2">Incident Details:</label>
+              <textarea
+                id="incident"
+                name="incident"
+                rows="6"
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                required
+              ></textarea>
+            </div>
+            <button
+              type="submit"
+              className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
+            >
+              Submit Report
+            </button>
+          </form>
+          <div className="text-center mt-10">
+            <Link to="/" className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600">
+              Return to Home
+            </Link>
           </div>
-          <div className="mb-4">
-            <label className="block text-gray-700">Location</label>
-            <input
-              type="text"
-              name="location"
-              value={form.location}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700">Victim Age</label>
-            <input
-              type="number"
-              name="victimAge"
-              value={form.victimAge}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700">Description</label>
-            <textarea
-              name="description"
-              value={form.description}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700">Upload File</label>
-            <input
-              type="file"
-              onChange={handleFileChange}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
-            />
-          </div>
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
-          >
-            Submit Report
-          </button>
-        </form>
+        </div>
       </div>
     </Layout>
   );
